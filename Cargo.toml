@@ -1,0 +1,7 @@
+[package]
+name = "ethan-rust"
+version = "0.1.0"
+authors = ["josyuan <josyuan@cisco.com>"]
+edition = "2018"
+
+[dependencies]
