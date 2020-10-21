@@ -1,7 +1,9 @@
 [package]
-name = "ethan-rust"
+name = "ethan_rust"
 version = "0.1.0"
 authors = ["josyuan <josyuan@cisco.com>"]
 edition = "2018"
 
 [dependencies]
+structopt = "0.3.13"
+rand = "0.7.2"
