@@ -23,18 +23,20 @@ fn main() {
     let gameopt = self::GameOptions::from_args();
     println!("{:?}", gameopt);
 
-    let mut ethan_game = EthanGame::new(
+    let ethan_game = EthanGame::new(
         gameopt.player_count, gameopt.chips, gameopt.ethan_eyes, gameopt.autoplay);
 
+    let boxed_game = Box::new(ethan_game);
     // start the game (autoplay in a separate thread for the hell of it)
-    let result = start(&mut ethan_game);
+
+    let result = start(boxed_game);
     match result {
-        Ok(_) => {
-            println!("game ran successfully")
+        Ok(f) => {
+            println!("game ran successfully");
+            println!("final state:\n{:?}", f);
         },
         Err(e) => {
             println!("something catastrophic happened, game did not finish -- {:?}", e)
         }
     }
-    println!("final state:\n{:?}", ethan_game)
 }

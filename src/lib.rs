@@ -1,6 +1,7 @@
 pub mod game_module {
     use rand::random;
-
+    use std::thread;
+    use std::io::{self, BufRead};
 
     #[derive(Debug)]
     pub struct EthanGame {
@@ -48,17 +49,23 @@ pub mod game_module {
         }
     }
 
-    pub fn start(game: &mut EthanGame) -> Result<(), &str> {
+    pub fn start(game: Box<EthanGame>) -> Result<Box<EthanGame>, String> {
+        // static lifetime required because we need to tell thread spawn that
+        // the game object is valid for the entire lifetime, otherwise, thread::spawn assumes it's
+        // possible game becomes crap, even though i put join right after
         if game.autoplay {
             println!("autoplay on, starting in a thread then waiting");
-            run(game)
+            let handle = thread::spawn(move || {
+                run(game)
+            });
+            handle.join().unwrap()
         } else {
             println!("autoplay off, running in main thread");
             run(game)
         }
     }
 
-    fn run(game: &mut EthanGame) -> Result<(), &str> {
+    fn run(game: Box<EthanGame>) -> Result<Box<EthanGame>, String> {
         println!("game execution begins");
         let mut the_game = game;
         loop {
@@ -68,18 +75,24 @@ pub mod game_module {
             };
             if the_game.check_end_condition() {
                 println!("game over");
-                break Ok(()) 
+                break Ok(the_game) 
             }
         }
     }
 
-    fn execute_turn(game: &mut EthanGame) -> Result<&mut EthanGame, &str> {
+    fn execute_turn(mut game: Box<EthanGame>) -> Result<Box<EthanGame>, String> {
         // check if current player has any chips. if not, return -1 to skip increment
         if game.players[game.current_player] < 1 {
             game.current_player = (game.current_player + 1) % game.players.len();
             return Ok(game);
         }
         println!("turn {} -- it is player {}'s turn", game.turn_count, game.current_player);
+        if !game.autoplay {
+            println!("Hit enter to execute turn");
+            let mut line = String::new();
+            let stdin = io::stdin();
+            stdin.lock().read_line(&mut line).unwrap();
+        }
         // roll two die
         let d1: u8 = random(); // separate lines so random can infer type
         let d1 = (d1 % 6) + 1;
