@@ -35,7 +35,7 @@ pub mod game_module {
         fn check_end_condition(&self) -> bool {
             // is current player in possession of all the chips
             if self.players[self.current_player] == (self.starting_chips * (self.players.len() as i32)) {
-                println!("HOORAY! PLAYER {} HAS WON THE GAME, ETHAN SUCKS", self.players[self.current_player]);
+                println!("HOORAY! PLAYER {} HAS WON THE GAME, ETHAN SUCKS", self.current_player);
                 true
             } else if self.ethan == (self.starting_chips * (self.players.len() as i32)) {
             // do no players have any chips left?
@@ -81,10 +81,10 @@ pub mod game_module {
         }
         println!("turn {} -- it is player {}'s turn", game.turn_count, game.current_player);
         // roll two die
-        let d1: i8 = random(); // separate lines so random can infer type
+        let d1: u8 = random(); // separate lines so random can infer type
         let d1 = (d1 % 6) + 1;
-        let d2: i8 = random();
-        let d2 = (d2 & 6) + 1;
+        let d2: u8 = random();
+        let d2 = (d2 % 6) + 1;
         // if 2, lose it all
         if d1 + d2 == 2 && game.ethan_eyes {
             println!("player {} got ethan eyes, lost all {} chips to ethan", game.current_player, game.players[game.current_player]);
